@@ -70,10 +70,8 @@ Entregas listadas no [projeto da disciplina](https://github.com/orgs/tes786205/p
 | Animação e controle do(s) personagem(ns) ([game#19](https://github.com/tes786205/game/issues/19)) | Ações por cenário em [`public/game/game/actions.js`](public/game/game/actions.js); interações em [`public/game/game/outside.js`](public/game/game/outside.js) e [`public/game/game/house.js`](public/game/game/house.js); mecânica da venda em [`public/game/game/blindfold.js`](public/game/game/blindfold.js); diálogos animados em [`public/game/ui/dialogue.js`](public/game/ui/dialogue.js) |
 | Colisão, câmeras e sons ([game#20](https://github.com/tes786205/game/issues/20)) | Transições/"câmera" (zoom em quadro, cofre, máquina, efeito CRT) em [`public/game/ui/transitions.js`](public/game/ui/transitions.js) e [`public/game/game/scene-loader.js`](public/game/game/scene-loader.js); sons em [`public/game/core/audio.js`](public/game/core/audio.js) e [`public/game/assets/sfx/`](public/game/assets/sfx). Por ser *point-and-click*, não há colisão física: as áreas e ações liberadas por cenário fazem esse papel |
 | Expansão 1 do jogo ([game#22](https://github.com/tes786205/game/issues/22), [game#23](https://github.com/tes786205/game/issues/23)): **Push/Notification** | [`public/game/ui/notifications.js`](public/game/ui/notifications.js) (Notification API; ativar em Pausar → Notificações) |
-| Expansão 2 do jogo ([game#24](https://github.com/tes786205/game/issues/24), [game#25](https://github.com/tes786205/game/issues/25)) | **Ainda não implementada** |
-| Integração com a feira de jogos ([game#26](https://github.com/tes786205/game/issues/26)): OAuth 2.0 e crédito de moeda virtual | [`public/game/ui/feira.js`](public/game/ui/feira.js) (login Google + crédito de tijolinhos na tela de jogo finalizado) e [`public/game/data/feira-config.js`](public/game/data/feira-config.js) |
-| Definição de protocolo e mensagens para multiplayer ([docs#10](https://github.com/tes786205/docs/issues/10), [game#27](https://github.com/tes786205/game/issues/27)) | **Ainda não implementado** |
-| Multiplayer: servidor e cliente ([game#28](https://github.com/tes786205/game/issues/28), [game#29](https://github.com/tes786205/game/issues/29)) | **Ainda não implementado** |
+
+
 
 ## Estrutura do código
 
