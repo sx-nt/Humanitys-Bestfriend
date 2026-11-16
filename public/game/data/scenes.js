@@ -50,15 +50,6 @@ export const scenes = Object.freeze({
         }
     },
 
-    construcao: {
-        hasHuman: false,
-        images: {
-            blindfolded: "assets/maps/C_Venda/construcao_com_venda.png",
-            unblindfolded: "assets/maps/S_Venda/construcao_sem_venda.png",
-            machineZoom: MACHINE_ZOOM_IMAGE
-        }
-    },
-
     ww: {
         hasHuman: false,
         images: {
@@ -94,10 +85,9 @@ export const scenes = Object.freeze({
 
 // REGRAS DE SEGURANÇA
 // O jogador só morre se estiver fora de casa sem a venda.
-// A construção é acessada pelos fundos, sem humanos por perto: área segura.
 export const OUTSIDE_HOUSE_SCENES = Object.freeze(["gates", "houseFront"]);
 export const INSIDE_HOUSE_SCENES = Object.freeze([
-    "quarto", "mirror", "ww", "quadroZoom", "cofre", "cofreAberto", "construcao"
+    "quarto", "mirror", "ww", "quadroZoom", "cofre", "cofreAberto"
 ]);
 
 export const SAFE_CODE = "030330";

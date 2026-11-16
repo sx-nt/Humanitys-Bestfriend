@@ -1,8 +1,8 @@
-// FLUXO DA PARTIDA: iniciar, reiniciar, game over e fim do capítulo.
+// FLUXO DA PARTIDA: iniciar, reiniciar, game over, livro lido e fim do jogo.
 import { state, resetState } from "../core/state.js";
 import { $ } from "../core/utils.js";
 import { stopBootSound, playBackgroundMusic, pauseBackgroundMusic } from "../core/audio.js";
-import { closeDialogue } from "../ui/dialogue.js";
+import { closeDialogue, showDialogue } from "../ui/dialogue.js";
 import { resetObjectives, closeObjectives } from "../ui/objectives.js";
 import { notify } from "../ui/notifications.js";
 import { showHud, hideHud, closePause, updateBattery, updateBlindfoldButton } from "../ui/hud.js";
@@ -10,7 +10,7 @@ import { updateInventory, closeInventory } from "../ui/inventory.js";
 import { closeReadingModals } from "../ui/readers.js";
 import { closeSafePanel } from "../ui/safe.js";
 import { showFeiraReward, resetFeira } from "../ui/feira.js";
-import { loadScene, cancelSceneLoad } from "./scene-loader.js";
+import { loadScene, cancelSceneLoad, refreshSceneUI } from "./scene-loader.js";
 import { startBoot } from "./boot.js";
 
 // Fecha painéis, modais e diálogos e cancela carregamentos pendentes.
@@ -22,6 +22,7 @@ function interruptGameplay() {
     closePause();
     closeSafePanel();
     closeReadingModals();
+    hideLoadingScreen();
 }
 
 function hideScreens(...ids) {
@@ -38,7 +39,7 @@ export function startGame() {
     resetFeira();
     setGameOverText();
 
-    hideScreens("start-screen", "boot-screen", "game-over", "chapter-end", "scene", "interface");
+    hideScreens("start-screen", "boot-screen", "game-over", "chapter-end", "loading-screen", "scene", "interface");
     $("game").classList.remove("blindfold-active");
 
     updateInventory();
@@ -85,21 +86,59 @@ export function gameOver(message = null) {
     $("restart-button").focus();
 }
 
-// FIM DO CAPÍTULO
-// Ler o livro inteiro pela primeira vez encerra o capítulo.
+// LIVRO LIDO
+// Fechar o livro depois de chegar à última página libera "Explorar a cidade"
+// e leva o jogador de volta ao quarto.
 export function handleBookClosed(reachedEnd) {
-    if (!reachedEnd || state.bookRead || state.isGameOver) return;
+    if (!reachedEnd || state.bookRead || state.isGameOver || state.gameFinished) return;
 
     state.bookRead = true;
-    showChapterEnd();
+    closeInventory();
+    closeReadingModals();
+
+    loadScene("quarto", () => {
+        showDialogue(["A cidade... Preciso ver com meus próprios olhos."], () => {
+            showDialogue(["Nova opção disponível: Explorar a cidade"], refreshSceneUI, "MEE SYSTEM");
+        }, "MEE");
+    });
 }
 
-function showChapterEnd() {
+// FIM DO JOGO
+// "Explorar a cidade" (com a venda) mostra uma tela de carregamento e,
+// em seguida, a tela de jogo finalizado com a Feira de Jogos.
+const LOADING_DURATION_MS = 2800;
+let loadingTimer = null;
+
+function hideLoadingScreen() {
+    clearTimeout(loadingTimer);
+    loadingTimer = null;
+
+    const screen = $("loading-screen");
+    screen.classList.add("hidden");
+    screen.classList.remove("is-loading");
+}
+
+export function finishGame() {
+    if (state.isGameOver || state.gameFinished) return;
+
     interruptGameplay();
-    notify("Capítulo 1 encerrado", "Obrigado por jogar!");
+    state.gameFinished = true;
 
     hideHud();
     hideScreens("interface");
+
+    const screen = $("loading-screen");
+    screen.classList.remove("hidden");
+    void screen.offsetWidth; // reinicia a animação da barra
+    screen.classList.add("is-loading");
+
+    loadingTimer = setTimeout(showChapterEnd, LOADING_DURATION_MS);
+}
+
+function showChapterEnd() {
+    hideLoadingScreen();
+    hideScreens("scene");
+    notify("Jogo finalizado", "Obrigado por jogar!");
 
     $("chapter-end").classList.remove("hidden");
     showFeiraReward();

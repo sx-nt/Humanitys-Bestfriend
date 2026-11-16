@@ -1,0 +1,74 @@
+/* ========================================
+   CARREGAMENTO (Explorar a cidade)
+======================================== */
+
+#loading-screen {
+    z-index: 47;
+
+    background-image:
+        linear-gradient(var(--color-screen-overlay), var(--color-screen-overlay)),
+        url("../assets/maps/C_Venda/construcao_com_venda.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.loading-log {
+    color: var(--color-terminal-log);
+}
+
+.loading-text {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.loading-dots::after {
+    content: "";
+    animation: loading-dots 1.2s steps(4, end) infinite;
+}
+
+#loading-progress {
+    width: 0%;
+    height: 100%;
+    background: var(--color-progress-fill);
+}
+
+#loading-screen.is-loading #loading-progress {
+    animation: loading-fill 2.6s ease-in-out forwards;
+}
+
+@keyframes loading-fill {
+    from { width: 0%; }
+    to { width: 100%; }
+}
+
+@keyframes loading-dots {
+    0% { content: ""; }
+    25% { content: "."; }
+    50% { content: ".."; }
+    75% { content: "..."; }
+}
+
+/* ========================================
+   JOGO FINALIZADO (textos extras do #chapter-end)
+======================================== */
+
+.chapter-end-kicker {
+    color: var(--color-accent);
+    font-size: clamp(11px, 1.4vw, 16px);
+    letter-spacing: 0.2em;
+}
+
+.chapter-end-teaser {
+    max-width: 560px;
+    color: var(--color-text-muted);
+    font-size: clamp(11px, 1.3vw, 15px);
+    line-height: 1.6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .loading-dots::after {
+        animation: none;
+        content: "...";
+    }
+}

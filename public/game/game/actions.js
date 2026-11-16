@@ -8,7 +8,7 @@ import { loadScene, isInteractionBlocked } from "./scene-loader.js";
 import { examineDebris, collectWood, goToGates, returnToGates, examineTools, collectTools } from "./outside.js";
 import {
     examineWindow, coverWindows, collectKey, examineCabinet, examinePicture,
-    removePicture, goToSafe, collectBook, examineMachine
+    removePicture, goToSafe, collectBook, exploreCity
 } from "./house.js";
 
 const go = (sceneName) => () => loadScene(sceneName);
@@ -30,8 +30,7 @@ const SCENE_ACTIONS = {
         ["Examinar quadro", examinePicture],
         ["Examinar espelho", go("mirror")],
         ["Examinar armário", examineCabinet],
-        s.windowsCovered && !s.blindfoldOn && s.hasHammer && s.hasNails &&
-            ["Ir para a construção", go("construcao")],
+        ["Explorar a cidade", exploreCity],
         ["Voltar aos portões", returnToGates],
         !s.windowsCovered && ["Examinar janelas", examineWindow]
     ],
@@ -59,11 +58,6 @@ const SCENE_ACTIONS = {
 
     mirror: (s) => [
         !s.keyCollected && !s.blindfoldOn && ["Coletar chave", collectKey],
-        ["Voltar ao quarto", go("quarto")]
-    ],
-
-    construcao: (s) => [
-        [s.machineExamined ? "Interagir com a máquina" : "Examinar máquina destruída", examineMachine],
         ["Voltar ao quarto", go("quarto")]
     ]
 };
