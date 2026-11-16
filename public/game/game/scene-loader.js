@@ -21,9 +21,10 @@ export function refreshSceneUI() {
 }
 
 // Interações com o cenário ficam bloqueadas durante transições,
-// diálogos, pausa e game over.
+// diálogos, pausa, game over e o fim do jogo (carregamento e tela final).
 export function isInteractionBlocked() {
-    return state.sceneLoading || state.isGameOver || state.isPaused || isDialogueOpen();
+    return state.sceneLoading || state.isGameOver || state.gameFinished ||
+        state.isPaused || isDialogueOpen();
 }
 
 function setLoading(loading) {

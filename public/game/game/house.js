@@ -1,10 +1,11 @@
 // INTERAÇÕES DENTRO DE CASA: quarto, janelas, espelho, armário,
-// quadro, cofre e construção.
+// quadro, cofre e a saída para explorar a cidade.
 import { state } from "../core/state.js";
 import { $ } from "../core/utils.js";
 import { showDialogue } from "../ui/dialogue.js";
 import { addItem } from "../ui/inventory.js";
 import { loadScene, refreshSceneUI } from "./scene-loader.js";
+import { finishGame } from "./flow.js";
 
 // JANELAS
 
@@ -130,22 +131,24 @@ export function collectBook() {
     showDialogue(["Livro adicionado ao inventário."], refreshSceneUI, "MEE SYSTEM");
 }
 
-// CONSTRUÇÃO
+// EXPLORAR A CIDADE
+// Trancado até o livro ser lido por inteiro. Para sair, a venda precisa
+// estar colocada (aqui o jogador é só avisado, não morre).
 
-export function examineMachine() {
-    if (state.machineExamined) {
-        showDialogue(["Não há mais nada que eu possa retirar da máquina."], refreshSceneUI, "MEE");
+export function exploreCity() {
+    if (!state.bookRead) {
+        showDialogue(
+            ["Ainda não. Preciso entender o que está acontecendo antes de sair..."],
+            refreshSceneUI,
+            "MEE"
+        );
         return;
     }
 
-    state.machineExamined = true;
-    state.machineZoomActive = true;
-    loadScene("construcao", () => showDialogue(
-        ["A máquina destruída ainda guarda sinais de energia."],
-        () => {
-            state.machineZoomActive = false;
-            loadScene("construcao");
-        },
-        "MEE"
-    ));
+    if (!state.blindfoldOn) {
+        showDialogue(["Coloque a venda antes de sair de casa."], refreshSceneUI, "MEE SYSTEM");
+        return;
+    }
+
+    finishGame();
 }

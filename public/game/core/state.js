@@ -32,15 +32,13 @@ function createInitialState() {
         documentFound: false,
         bookRead: false,
 
-        // Construção
-        machineExamined: false,
-
         inventory: [],
         battery: 100,
 
         // Controle de fluxo
         isPaused: false,
         isGameOver: false,
+        gameFinished: false, // "Explorar a cidade": carregamento e tela final
         sceneLoading: false
     };
 }
@@ -53,6 +51,6 @@ export function resetState() {
 
 // Campos de progresso gravados pelo "Salvar jogo"
 export function getProgressSnapshot() {
-    const { isPaused, isGameOver, sceneLoading, ...progress } = state;
+    const { isPaused, isGameOver, gameFinished, sceneLoading, ...progress } = state;
     return { ...progress, inventory: [...state.inventory] };
 }

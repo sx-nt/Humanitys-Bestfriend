@@ -1,7 +1,6 @@
 // MECÂNICA DA VENDA E REGRAS DE MORTE
 // - Fora de casa (portões, frente da casa) sem a venda: game over.
 // - Dentro de casa com janelas descobertas: a remoção é bloqueada com aviso.
-// - A construção é área segura.
 import { state } from "../core/state.js";
 import { getDialogue } from "../data/dialogues.js";
 import { OUTSIDE_HOUSE_SCENES, INSIDE_HOUSE_SCENES } from "../data/scenes.js";

@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="css/safe.css">
     <link rel="stylesheet" href="css/effects.css">
     <link rel="stylesheet" href="css/feira.css">
+    <link rel="stylesheet" href="css/loading.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
@@ -154,9 +155,24 @@
         </div>
     </section>
 
-    <section id="chapter-end" class="screen hidden" aria-label="Fim do capítulo">
-        <h1>CAPÍTULO 1 ENCERRADO</h1>
+    <!-- CARREGAMENTO (Explorar a cidade) -->
+    <section id="loading-screen" class="screen hidden" aria-label="Carregando">
+        <div class="terminal loading-terminal">
+            <p class="terminal-title">MEE SYSTEM // EXPLORAR A CIDADE</p>
+            <p class="loading-log">Destino: cidade · Venda: equipada</p>
+            <p class="loading-text" role="status">CARREGANDO<span class="loading-dots" aria-hidden="true"></span></p>
+            <div class="progress-bar loading-bar">
+                <div id="loading-progress"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- JOGO FINALIZADO -->
+    <section id="chapter-end" class="screen hidden" aria-label="Jogo finalizado">
+        <p class="chapter-end-kicker">JOGO FINALIZADO</p>
+        <h1>FIM DO CAPÍTULO 1</h1>
         <p>Obrigado por jogar!</p>
+        <p class="chapter-end-teaser">A cidade guarda respostas... Continua no próximo capítulo.</p>
         <div id="feira-reward" class="hidden" aria-label="Feira de Jogos">
             <p class="feira-title">FEIRA DE JOGOS</p>
             <button id="feira-button" type="button">Resgatar tijolinhos na Feira de Jogos</button>
