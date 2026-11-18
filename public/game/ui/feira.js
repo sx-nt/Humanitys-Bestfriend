@@ -1,4 +1,6 @@
 // FEIRA DE JOGOS: resgate de tijolinhos na tela de fim do capítulo.
+// O botão oficial do Google faz o login e credita os tijolinhos; o link
+// "Resgatar tijolinhos na Feira de Jogos" abre o site da Feira em outra aba.
 // Carrega o Google Identity Services (GSI) só quando precisa, sem bloquear o
 // início do jogo, e envia o crédito para a API da Feira com fetch.
 import { $ } from "../core/utils.js";
@@ -9,17 +11,17 @@ const GSI_TIMEOUT_MS = 10000;
 
 const MESSAGES = Object.freeze({
     loading: "Conectando à Feira de Jogos...",
-    ready: "Entre com sua conta Google para resgatar seus tijolinhos.",
+    ready: "",
     sending: "Enviando crédito...",
-    success: "Crédito adicionado!",
-    error: "Erro ao adicionar crédito :(",
+    success: value => `${value} tijolinhos creditados na sua conta! Veja na Feira de Jogos.`,
+    error: "Erro ao adicionar crédito :( Tente entrar novamente.",
     loginError: "Não foi possível entrar com o Google. Tente novamente.",
     offline: "Não foi possível conectar ao Google. Verifique sua conexão e tente novamente."
 });
 
 let gsiPromise = null;
 let gsiInitialized = false;
-let buttonBound = false;
+let retryBound = false;
 
 // Estado por partida (zerado em resetFeira).
 let credited = false;
@@ -67,10 +69,6 @@ function setStatus(message, kind = "") {
     status.dataset.kind = kind;
 }
 
-function setButtonEnabled(enabled) {
-    $("feira-button").disabled = !enabled;
-}
-
 function showGoogleButton(visible) {
     $("feira-google-button").classList.toggle("hidden", !visible);
 }
@@ -103,7 +101,6 @@ async function handleCredential(res) {
 
     const run = runId;
     sending = true;
-    setButtonEnabled(false);
     setStatus(MESSAGES.sending);
 
     try {
@@ -111,11 +108,11 @@ async function handleCredential(res) {
         if (run !== runId) return;
         credited = true;
         showGoogleButton(false);
-        setStatus(MESSAGES.success, "success");
+        $("feira-hint").classList.add("hidden");
+        setStatus(MESSAGES.success(feiraConfig.creditValue), "success");
     } catch (error) {
         console.warn("Feira de Jogos: erro ao adicionar crédito", error);
         if (run !== runId) return;
-        setButtonEnabled(true);
         setStatus(MESSAGES.error, "error");
     } finally {
         if (run === runId) sending = false;
@@ -126,27 +123,27 @@ function initGsi(id) {
     if (gsiInitialized) return;
     id.initialize({
         client_id: feiraConfig.clientId,
-        callback: handleCredential
+        callback: handleCredential,
+        ux_mode: "popup",
+        use_fedcm_for_prompt: true,
+        cancel_on_tap_outside: false
     });
     gsiInitialized = true;
 }
 
-// Abre o One Tap; se não for exibido ou for pulado, tenta mais uma vez
-// (a referência repetia sem limite).
+// Abre o One Tap. Se o navegador não exibir (bloqueio, cooldown, iframe),
+// o botão oficial do Google continua disponível na tela.
 function prompt(id) {
-    let retried = false;
-    id.prompt(notification => {
-        if (retried || credited) return;
-        if (notification?.isNotDisplayed?.() || notification?.isSkippedMoment?.()) {
-            retried = true;
-            id.prompt();
-        }
-    });
+    try {
+        id.prompt();
+    } catch (error) {
+        console.warn("Feira de Jogos: One Tap indisponível", error);
+    }
 }
 
 async function connect() {
     const run = runId;
-    setButtonEnabled(false);
+    $("feira-retry").classList.add("hidden");
     setStatus(MESSAGES.loading);
 
     let id;
@@ -155,8 +152,8 @@ async function connect() {
     } catch (error) {
         console.warn("Feira de Jogos:", error.message);
         if (run !== runId) return;
-        setButtonEnabled(true);
         setStatus(MESSAGES.offline, "error");
+        $("feira-retry").classList.remove("hidden");
         return;
     }
 
@@ -167,6 +164,7 @@ async function connect() {
 
         // Botão oficial do Google como alternativa ao One Tap.
         const container = $("feira-google-button");
+        showGoogleButton(true);
         if (!container.hasChildNodes()) {
             id.renderButton(container, {
                 theme: "filled_black",
@@ -175,22 +173,13 @@ async function connect() {
                 locale: "pt-BR"
             });
         }
-        showGoogleButton(true);
-        setButtonEnabled(true);
         setStatus(MESSAGES.ready);
 
         prompt(id);
     } catch (error) {
         console.warn("Feira de Jogos: erro no GSI", error);
-        setButtonEnabled(true);
         setStatus(MESSAGES.loginError, "error");
     }
-}
-
-function onRedeemClick() {
-    if (credited || sending) return;
-    if (gsi() && gsiInitialized) prompt(gsi());
-    else connect();
 }
 
 // Chamada no fim do capítulo.
@@ -198,10 +187,15 @@ export function showFeiraReward() {
     const section = $("feira-reward");
     if (!feiraConfig.enabled || !section) return;
 
-    if (!buttonBound) {
-        $("feira-button").addEventListener("click", onRedeemClick);
-        buttonBound = true;
+    if (!retryBound) {
+        $("feira-retry").addEventListener("click", () => {
+            if (!credited && !sending) connect();
+        });
+        retryBound = true;
     }
+
+    $("feira-amount").textContent = feiraConfig.creditValue;
+    $("feira-link").href = feiraConfig.siteUrl;
 
     section.classList.remove("hidden");
     if (!credited && !sending) connect();
@@ -218,8 +212,9 @@ export function resetFeira() {
 
     section.classList.add("hidden");
     setStatus("");
-    setButtonEnabled(true);
     showGoogleButton(false);
+    $("feira-hint").classList.remove("hidden");
+    $("feira-retry").classList.add("hidden");
     try {
         gsi()?.cancel?.();
     } catch {

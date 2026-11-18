@@ -173,11 +173,22 @@
         <h1>FIM DO CAPÍTULO 1</h1>
         <p>Obrigado por jogar!</p>
         <p class="chapter-end-teaser">A cidade guarda respostas... Continua no próximo capítulo.</p>
-        <div id="feira-reward" class="hidden" aria-label="Feira de Jogos">
-            <p class="feira-title">FEIRA DE JOGOS</p>
-            <button id="feira-button" type="button">Resgatar tijolinhos na Feira de Jogos</button>
-            <div id="feira-google-button" class="hidden"></div>
-            <p id="feira-status" role="status" aria-live="polite"></p>
+        <div class="chapter-end-cards">
+            <div id="feira-reward" class="hidden" aria-label="Feira de Jogos">
+                <p class="feira-title">FEIRA DE JOGOS</p>
+                <p class="feira-prize">Você ganhou <strong><span id="feira-amount">100</span> tijolinhos!</strong></p>
+                <p id="feira-hint" class="feira-hint">Entre com sua conta Google para receber o crédito:</p>
+                <div id="feira-google-button" class="hidden"></div>
+                <p id="feira-status" role="status" aria-live="polite"></p>
+                <button id="feira-retry" class="hidden" type="button">Tentar novamente</button>
+                <a id="feira-link" class="feira-link" href="https://feira-de-jogos.dev.br/" target="_blank" rel="noopener">Resgatar tijolinhos na Feira de Jogos</a>
+            </div>
+            <div id="rating-card" aria-label="Avaliação do jogo">
+                <p class="feira-title">AVALIE O JOGO</p>
+                <img id="rating-qr" src="assets/images/qr_avaliacao.png" width="168" height="168" alt="QR code para o formulário de avaliação do jogo">
+                <p class="feira-hint">Aponte a câmera do celular para o QR code</p>
+                <a class="feira-link" href="https://docs.google.com/forms/d/e/1FAIpQLSeeleFRJ3PbTeX9nmxFtfqF_3VMD6bBGixNGFODEtqjbHGK9A/viewform?entry.52413313=HBF" target="_blank" rel="noopener">Abrir formulário</a>
+            </div>
         </div>
         <button id="chapter-end-restart" type="button">Jogar novamente</button>
     </section>

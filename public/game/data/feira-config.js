@@ -14,6 +14,7 @@ export const feiraConfig = Object.freeze({
     enabled: true,
     clientId: "331191695151-ku8mdhd76pc2k36itas8lm722krn0u64.apps.googleusercontent.com",
     apiUrl: "https://feira-de-jogos.dev.br/api/v2/credit",
+    siteUrl: "https://feira-de-jogos.dev.br/",
     productId: 1,
     creditValue: 100
 });
