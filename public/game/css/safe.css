@@ -15,6 +15,7 @@
 }
 
 .safe-card {
+    position: relative;
     width: min(430px, calc(100% - 32px));
     padding: 26px;
 
@@ -68,4 +69,34 @@
     justify-content: flex-end;
     gap: 10px;
     margin-top: 12px;
+}
+
+/* Botão de dica "?" no canto do cofre */
+.safe-hint {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-color: var(--color-safe-border);
+    font-size: 16px;
+    line-height: 1;
+}
+
+/* Modelo da senha: quantidade de dígitos */
+.safe-model {
+    margin-bottom: 8px;
+    color: var(--color-accent);
+    font-size: 14px;
+    letter-spacing: 0.2em;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
 }

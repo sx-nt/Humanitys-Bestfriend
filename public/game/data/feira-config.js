@@ -7,7 +7,8 @@
 //   Feira de Jogos. O valor 1 abaixo é só um marcador provisório.
 // - creditValue é a quantidade de tijolinhos creditada por partida (provisório).
 // - O cliente OAuth do Google (clientId) precisa autorizar a origem deste site
-//   (ex.: https://seu-dominio.com e http://localhost:3000) em
+//   (https://tes-hbf.vercel.app, onde o jogo roda na Feira, e
+//   http://localhost:3000 para testes) em
 //   "Origens JavaScript autorizadas"; caso contrário o login não aparece.
 // - enabled: false desliga a integração por completo.
 export const feiraConfig = Object.freeze({

@@ -56,6 +56,15 @@ export function goToGates() {
 
 // PORTÕES
 
+// Substitui {registro} pelo número sorteado da partida
+function fillRecord(line) {
+    return line.replaceAll("{registro}", state.residentRecord);
+}
+
+function withRecord(steps) {
+    return steps.map(step => step.lines ? { ...step, lines: step.lines.map(fillRecord) } : step);
+}
+
 function followAgent() {
     state.gatesReady = true;
     loadScene("houseFront", () => {
@@ -73,7 +82,7 @@ function startGatesSequence() {
 
     showDialogue(incoming.lines, () => {
         swapBackground(GATES_OFFICER_IMAGE, async () => {
-            await playDialogueSteps(officer.steps, dialogueActions);
+            await playDialogueSteps(withRecord(officer.steps), dialogueActions);
 
             // Pedido do Agente ao fim da conversa nos portões
             setObjective("seguir-agente", "Siga o Agente até a casa");
@@ -101,8 +110,20 @@ function warnPlayer() {
     ), warning.speaker);
 }
 
+// Depois da dica do cofre: O Agente fica bravo, mas diz o registro.
+// Essa volta não conta como advertência.
+function askAgentAboutResident() {
+    const talk = getDialogue("officerResidentRecord");
+    playDialogueSteps(withRecord(talk.steps), dialogueActions).then(offerReturnHome);
+}
+
 export function returnToGates() {
     leaveHouse("gates", () => {
+        if (state.safeHintRequested && !state.safeOpen) {
+            swapBackground(GATES_OFFICER_IMAGE, askAgentAboutResident);
+            return;
+        }
+
         state.warnings++;
 
         swapBackground(GATES_OFFICER_IMAGE, () => {

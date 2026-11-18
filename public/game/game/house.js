@@ -4,6 +4,7 @@ import { state } from "../core/state.js";
 import { $ } from "../core/utils.js";
 import { showDialogue } from "../ui/dialogue.js";
 import { addItem } from "../ui/inventory.js";
+import { setObjective, completeObjective } from "../ui/objectives.js";
 import { loadScene, refreshSceneUI } from "./scene-loader.js";
 import { finishGame } from "./flow.js";
 
@@ -115,8 +116,22 @@ export function goToSafe() {
     loadScene(state.safeOpen ? "cofreAberto" : "cofre");
 }
 
+// Dica do cofre ("?"): os dois primeiros dígitos vêm do Agente.
+// A partir daqui, voltar aos portões abre a conversa sobre o antigo morador.
+export function requestSafeHint() {
+    state.safeHintRequested = true;
+    showDialogue([
+        "Seis dígitos batem com algo que já vi nesta casa... mas faltam os dois primeiros.",
+        "O Agente falou do registro do antigo morador. Talvez eu deva voltar aos portões e perguntar sobre ele."
+    ], () => {
+        setObjective("perguntar-agente", "Pergunte ao Agente sobre o antigo morador");
+        refreshSceneUI();
+    }, "MEE");
+}
+
 export function unlockSafe() {
     state.safeOpen = true;
+    completeObjective("perguntar-agente");
     loadScene("cofreAberto", () => {
         showDialogue(["Senha Correta. Me parece que há um livro ai dentro"], refreshSceneUI, "MEE SYSTEM");
     });
