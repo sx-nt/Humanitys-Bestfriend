@@ -1,6 +1,6 @@
 // FLUXO DA PARTIDA: iniciar, reiniciar, game over, livro lido e fim do jogo.
 import { state, resetState } from "../core/state.js";
-import { $ } from "../core/utils.js";
+import { $, preloadImage } from "../core/utils.js";
 import { stopBootSound, playBackgroundMusic, pauseBackgroundMusic } from "../core/audio.js";
 import { closeDialogue, showDialogue } from "../ui/dialogue.js";
 import { resetObjectives, closeObjectives } from "../ui/objectives.js";
@@ -10,6 +10,7 @@ import { updateInventory, closeInventory } from "../ui/inventory.js";
 import { closeReadingModals } from "../ui/readers.js";
 import { closeSafePanel } from "../ui/safe.js";
 import { showFeiraReward, resetFeira } from "../ui/feira.js";
+import { crtTransition } from "../ui/transitions.js";
 import { loadScene, cancelSceneLoad, refreshSceneUI } from "./scene-loader.js";
 import { startBoot } from "./boot.js";
 
@@ -104,12 +105,20 @@ export function handleBookClosed(reachedEnd) {
 }
 
 // FIM DO JOGO
-// "Explorar a cidade" (com a venda) mostra uma tela de carregamento e,
-// em seguida, a tela de jogo finalizado com a Feira de Jogos.
+// "Explorar a cidade" (com a venda) mostra uma tela de carregamento, depois a
+// construção na cidade com uma fala do MEE e, após alguns segundos nessa
+// cena, a tela de jogo finalizado com a Feira de Jogos.
 const LOADING_DURATION_MS = 2800;
+const CONSTRUCTION_HOLD_MS = 4500;
+const CONSTRUCTION_IMAGE = "assets/maps/C_Venda/construcao_com_venda.png";
+const CONSTRUCTION_LINES = ["Há algo de estranho nesse lugar..."];
+
 let loadingTimer = null;
+// Invalida etapas pendentes do final quando a partida é interrompida.
+let endingRun = 0;
 
 function hideLoadingScreen() {
+    endingRun++;
     clearTimeout(loadingTimer);
     loadingTimer = null;
 
@@ -123,6 +132,7 @@ export function finishGame() {
 
     interruptGameplay();
     state.gameFinished = true;
+    const run = endingRun;
 
     hideHud();
     hideScreens("interface");
@@ -132,11 +142,41 @@ export function finishGame() {
     void screen.offsetWidth; // reinicia a animação da barra
     screen.classList.add("is-loading");
 
-    loadingTimer = setTimeout(showChapterEnd, LOADING_DURATION_MS);
+    preloadImage(CONSTRUCTION_IMAGE);
+    loadingTimer = setTimeout(() => {
+        if (run === endingRun) showConstruction(run);
+    }, LOADING_DURATION_MS);
+}
+
+function showConstruction(run) {
+    crtTransition(() => {
+        if (run !== endingRun) return;
+
+        $("loading-screen").classList.add("hidden");
+        $("loading-screen").classList.remove("is-loading");
+
+        const background = $("background");
+        background.classList.remove("scene-enter");
+        background.src = CONSTRUCTION_IMAGE;
+        void background.offsetWidth;
+        background.classList.add("scene-enter");
+        $("mirror-key-overlay").classList.add("hidden");
+        $("scene").classList.remove("hidden");
+
+        showDialogue(CONSTRUCTION_LINES, () => {
+            if (run !== endingRun) return;
+            // Deixa o jogador olhando a construção antes da tela final
+            loadingTimer = setTimeout(() => {
+                if (run !== endingRun) return;
+                crtTransition(() => {
+                    if (run === endingRun) showChapterEnd();
+                });
+            }, CONSTRUCTION_HOLD_MS);
+        }, "MEE");
+    });
 }
 
 function showChapterEnd() {
-    hideLoadingScreen();
     hideScreens("scene");
     notify("Jogo finalizado", "Obrigado por jogar!");
 
