@@ -54,7 +54,7 @@ Edite `public/game/data/feira-config.js`:
 
 - `productId`: id do jogo cadastrado no banco da Feira de Jogos (hoje está `1`, valor provisório);
 - `creditValue`: quantidade de tijolinhos creditados ao terminar o jogo;
-- o domínio onde o jogo roda precisa estar nas origens autorizadas do *client* Google usado pela Feira (`clientId`).
+- o domínio onde o jogo roda (<https://tes-hbf.vercel.app>) precisa estar nas origens autorizadas do *client* Google usado pela Feira (`clientId`).
 
 ## Onde está cada entrega
 
