@@ -114,10 +114,13 @@
 
     <section id="safe-panel" class="hidden" aria-label="Cofre">
         <div class="safe-card">
+            <button id="safe-hint" class="safe-hint" type="button" aria-label="Pedir uma dica" title="Dica">?</button>
             <p class="safe-kicker">COFRE OCULTO</p>
             <h2>INSIRA A SENHA</h2>
-            <label for="safe-code">Código de seis dígitos</label>
-            <input id="safe-code" inputmode="numeric" maxlength="6" autocomplete="off" aria-describedby="safe-feedback">
+            <label for="safe-code">Código de oito dígitos</label>
+            <p id="safe-model" class="safe-model" aria-hidden="true">_ _ &nbsp; _ _ _ _ _ _</p>
+            <input id="safe-code" inputmode="numeric" maxlength="8" autocomplete="off" placeholder="00000000" aria-describedby="safe-feedback safe-model-desc">
+            <p id="safe-model-desc" class="sr-only">Formato: dois dígitos seguidos de seis dígitos.</p>
             <p id="safe-feedback" class="safe-feedback" role="status"></p>
             <div class="safe-actions">
                 <button id="safe-cancel" type="button">Voltar</button>

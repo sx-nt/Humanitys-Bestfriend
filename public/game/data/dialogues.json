@@ -46,7 +46,7 @@
                   "Recusava-se a cumprir determinadas orientações e insistia em questionar decisões que não lhe competiam.",
                   "Tentamos ajudá-lo, naturalmente. O departamento oferece inúmeras oportunidades de correção.",
                   "Mas, quando um indivíduo demonstra repetidamente não ter condições de cooperar, certos procedimentos precisam ser iniciados.",
-                  "O registro dele foi encerrado.",
+                  "O registro dele, de número {registro}, foi encerrado.",
                   "Mas não há motivo para se preocupar com isso!",
                   "Afinal, você parece bastante... cooperativo"
               ]
@@ -77,6 +77,18 @@
   "officerWarning2": {
     "speaker": "O AGENTE",
     "lines": ["Você de novo?", "Eu já disse uma vez. Não costumo repetir orientações.", "Volte para casa. Agora. Esta é sua segunda advertência."]
+  },
+  "officerResidentRecord": {
+    "steps": [
+      { "type": "lines", "speaker": "O AGENTE", "lines": ["Você outra vez?!", "Eu mandei você ficar em casa."] },
+      { "type": "lines", "speaker": "MEE", "lines": ["Desculpe. Só preciso saber uma coisa sobre o antigo morador."] },
+      { "type": "lines", "speaker": "O AGENTE", "lines": [
+        "O antigo morador. Sempre o antigo morador...",
+        "Curiosidade é exatamente o que causou os problemas dele.",
+        "Registro número {registro}. Encerrado. É tudo o que você precisa saber.",
+        "Agora volte para casa e não me faça perder mais tempo."
+      ] }
+    ]
   },
   "officerInterrogation": {
     "speaker": "O AGENTE",

@@ -1,8 +1,7 @@
 // PONTO DE ENTRADA: conecta os módulos e registra os eventos da página.
 import { $ } from "./core/utils.js";
 import { setupUiSounds, playUiSound } from "./core/audio.js";
-import { state } from "./core/state.js";
-import { SAFE_CODE } from "./data/scenes.js";
+import { state, safeCode } from "./core/state.js";
 import { skipTyping } from "./ui/dialogue.js";
 import { crtTransition } from "./ui/transitions.js";
 import { initObjectives, closeObjectives } from "./ui/objectives.js";
@@ -14,7 +13,7 @@ import { initSafePanel } from "./ui/safe.js";
 import { setSceneUIRenderer } from "./game/scene-loader.js";
 import { updateSceneActions } from "./game/actions.js";
 import { toggleBlindfold } from "./game/blindfold.js";
-import { unlockSafe } from "./game/house.js";
+import { unlockSafe, requestSafeHint } from "./game/house.js";
 import { startBoot, skipBoot } from "./game/boot.js";
 import { startGame, restartGame, handleBookClosed } from "./game/flow.js";
 
@@ -33,7 +32,7 @@ setOpenableItems({
 });
 
 initReaders({ onBookClosed: handleBookClosed });
-initSafePanel({ code: SAFE_CODE, onUnlock: unlockSafe });
+initSafePanel({ getCode: safeCode, onUnlock: unlockSafe, onHint: requestSafeHint });
 initObjectives();
 initNotifications();
 setupUiSounds();

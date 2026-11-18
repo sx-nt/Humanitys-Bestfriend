@@ -89,5 +89,3 @@ export const OUTSIDE_HOUSE_SCENES = Object.freeze(["gates", "houseFront"]);
 export const INSIDE_HOUSE_SCENES = Object.freeze([
     "quarto", "mirror", "ww", "quadroZoom", "cofre", "cofreAberto"
 ]);
-
-export const SAFE_CODE = "030330";
