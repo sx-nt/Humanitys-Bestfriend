@@ -22,7 +22,7 @@ let finishTyping = null;
 // Cada diálogo aberto recebe um id; ao abrir outro ou cancelar, os
 // callbacks pendentes do anterior são ignorados.
 let session = 0;
-let activeDialogueSequence = null;
+
 
 
 export function setVoiceOverride(voice) {
@@ -33,7 +33,29 @@ export function isDialogueOpen() {
     return !$("dialogue").classList.contains("hidden");
 }
 
+export function advanceDialogue() {
+    const { box, next } = elements();
+    if (box.classList.contains("hidden")) return false;
+
+    if (next.getClientRects().length) {
+        if (!next.disabled) next.click();
+        return true;
+    }
+    if (skipTyping()) return true;
+
+    const controls = [...box.querySelectorAll("button:not(:disabled)")].filter(button =>
+
+        button.getClientRects().length > 0 && getComputedStyle(button).visibility !== "hidden"
+    );
+    const focused = controls.includes(document.activeElement)
+        ? document.activeElement
+        : controls[0];
+    focused?.click();
+    return true;
+}
+
 // VOZES
+
 
 function stopTypingVoice() {
     if (!typingVoice) return;
@@ -73,6 +95,7 @@ export function skipTyping() {
 }
 
 function typeText(element, text, speaker) {
+
     // Uma digitação anterior é concluída (e sua Promise resolvida)
     skipTyping();
 
@@ -94,6 +117,7 @@ function typeText(element, text, speaker) {
             element.textContent = text;
             resolve();
         };
+
 
         startTypingVoice(speaker);
 
@@ -120,24 +144,23 @@ function elements() {
         speaker: $("dialogue-speaker"),
         text: $("dialogue-text"),
         next: $("dialogue-next"),
-        skip: $("dialogue-skip"),
         choices: $("dialogue-choices")
     };
 }
 
 
 function openBox(speaker) {
-    const { box, speaker: speakerEl, text, next, skip, choices } = elements();
+    const { box, speaker: speakerEl, text, next, choices } = elements();
 
     box.classList.remove("hidden");
     $("game").classList.add("dialogue-active");
+    $("inventory-toggle").disabled = true;
+    $("objectives-toggle").disabled = true;
 
     next.onclick = null;
     next.disabled = false;
     next.textContent = "Avançar";
     next.classList.add("hidden");
-    skip.onclick = null;
-    skip.classList.add("hidden");
     choices.classList.add("hidden");
 
     choices.replaceChildren();
@@ -155,7 +178,10 @@ function openBox(speaker) {
 function closeBox() {
     $("dialogue").classList.add("hidden");
     $("game").classList.remove("dialogue-active");
+    $("inventory-toggle").disabled = false;
+    $("objectives-toggle").disabled = false;
 }
+
 
 // Fecha qualquer diálogo aberto e descarta seus callbacks.
 export function closeDialogue() {
@@ -164,18 +190,17 @@ export function closeDialogue() {
     stopTypingVoice();
     voiceOverride = null;
 
-    const { text, next, skip, choices } = elements();
+    const { text, next, choices } = elements();
     next.onclick = null;
-    skip.onclick = null;
     choices.replaceChildren();
 
     text.classList.remove("fade-out");
     closeBox();
 }
 
-// DIÁLOGO NORMAL COM BOTÕES DE AVANÇO E PULO
+// DIÁLOGO NORMAL COM AVANÇO POR BOTÃO, ESPAÇO OU CONTROLE
 export function showDialogue(lines, callback = null, speaker = "MEE") {
-    const { text, next, skip } = elements();
+    const { text, next } = elements();
     const id = openBox(speaker);
     let index = 0;
     let busy = true;
@@ -211,20 +236,9 @@ export function showDialogue(lines, callback = null, speaker = "MEE") {
         }
 
         next.onclick = null;
-        skip.onclick = null;
         closeBox();
         if (callback) callback();
     };
-
-    skip.onclick = () => {
-        if (id !== session) return;
-        const sequence = activeDialogueSequence;
-        if (sequence) sequence.skipped = true;
-        closeDialogue();
-        if (sequence) sequence.finishCurrent?.();
-        else if (callback) callback();
-    };
-    skip.classList.remove("hidden");
 
     showCurrentLine();
 }
@@ -269,40 +283,23 @@ export async function showChoiceDialogue(question, options, speaker = "") {
 // SEQUÊNCIA DE ETAPAS (data/dialogues.json)
 // handlers mapeia os nomes de "action" do JSON para funções do jogo.
 export async function playDialogueSteps(steps, handlers = {}) {
-    const isRootSequence = !activeDialogueSequence;
-    const sequence = activeDialogueSequence || { skipped: false, finishCurrent: null };
-    if (isRootSequence) activeDialogueSequence = sequence;
-
-    try {
-        for (const step of steps) {
-            if (sequence.skipped) return;
-
-            if (step.type === "lines") {
-                await new Promise(resolve => {
-                    const finish = () => {
-                        if (sequence.finishCurrent === finish) sequence.finishCurrent = null;
-                        resolve();
-                    };
-                    sequence.finishCurrent = finish;
-                    showDialogue(step.lines, finish, step.speaker);
-                });
-                continue;
-            }
-
-            if (step.type === "choice") {
-                await new Promise(resolve => {
-                    showChoiceDialogue(step.question || "", step.choices.map(choice => ({
-                        label: choice.label,
-                        action: async () => {
-                            if (choice.steps) await playDialogueSteps(choice.steps, handlers);
-                            if (!sequence.skipped && choice.action) handlers[choice.action]?.();
-                            resolve();
-                        }
-                    })), step.speaker);
-                });
-            }
+    for (const step of steps) {
+        if (step.type === "lines") {
+            await new Promise(resolve => showDialogue(step.lines, resolve, step.speaker));
+            continue;
         }
-    } finally {
-        if (isRootSequence) activeDialogueSequence = null;
+
+        if (step.type === "choice") {
+            await new Promise(resolve => {
+                showChoiceDialogue(step.question || "", step.choices.map(choice => ({
+                    label: choice.label,
+                    action: async () => {
+                        if (choice.steps) await playDialogueSteps(choice.steps, handlers);
+                        if (choice.action) handlers[choice.action]?.();
+                        resolve();
+                    }
+                })), step.speaker);
+            });
+        }
     }
 }

@@ -61,11 +61,6 @@
     font-size: 11px;
 }
 
-#dialogue-skip {
-    background: transparent;
-    color: var(--color-text-muted);
-}
-
 
 /* Com opções de resposta, a caixa cresce para caber todos os botões */
 #dialogue:has(#dialogue-choices:not(.hidden)) {

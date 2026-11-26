@@ -1,4 +1,5 @@
 import { $ } from "../core/utils.js";
+import { advanceDialogue } from "../ui/dialogue.js";
 
 const BUTTONS = {
     confirm: 2,
@@ -52,6 +53,8 @@ function moveFocus(direction) {
 }
 
 function confirmFocusedControl() {
+    if (advanceDialogue()) return;
+
     const controls = getVisibleControls();
     const focused = controls.includes(document.activeElement)
         ? document.activeElement
