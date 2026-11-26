@@ -47,9 +47,20 @@
     text-shadow: 0 0 5px var(--color-mee-glow);
 }
 
-#dialogue-next {
-    align-self: flex-end;
+#dialogue-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    width: 100%;
+    margin-top: auto;
 }
+
+#dialogue-actions button {
+    padding: 8px 12px;
+    font-size: 11px;
+}
+
 
 /* Com opções de resposta, a caixa cresce para caber todos os botões */
 #dialogue:has(#dialogue-choices:not(.hidden)) {
@@ -123,10 +134,15 @@
         line-height: 1.45;
     }
 
-    #dialogue-next {
-        padding: 8px 12px;
-        font-size: 11px;
+    #dialogue-actions {
+        gap: 6px;
     }
+
+    #dialogue-actions button {
+        padding: 7px 9px;
+        font-size: 9px;
+    }
+
 
     #dialogue-choices {
         gap: 6px;

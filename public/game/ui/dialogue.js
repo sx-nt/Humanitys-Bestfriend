@@ -23,6 +23,8 @@ let finishTyping = null;
 // callbacks pendentes do anterior são ignorados.
 let session = 0;
 
+
+
 export function setVoiceOverride(voice) {
     voiceOverride = voice;
 }
@@ -31,7 +33,29 @@ export function isDialogueOpen() {
     return !$("dialogue").classList.contains("hidden");
 }
 
+export function advanceDialogue() {
+    const { box, next } = elements();
+    if (box.classList.contains("hidden")) return false;
+
+    if (next.getClientRects().length) {
+        if (!next.disabled) next.click();
+        return true;
+    }
+    if (skipTyping()) return true;
+
+    const controls = [...box.querySelectorAll("button:not(:disabled)")].filter(button =>
+
+        button.getClientRects().length > 0 && getComputedStyle(button).visibility !== "hidden"
+    );
+    const focused = controls.includes(document.activeElement)
+        ? document.activeElement
+        : controls[0];
+    focused?.click();
+    return true;
+}
+
 // VOZES
+
 
 function stopTypingVoice() {
     if (!typingVoice) return;
@@ -71,6 +95,7 @@ export function skipTyping() {
 }
 
 function typeText(element, text, speaker) {
+
     // Uma digitação anterior é concluída (e sua Promise resolvida)
     skipTyping();
 
@@ -92,6 +117,7 @@ function typeText(element, text, speaker) {
             element.textContent = text;
             resolve();
         };
+
 
         startTypingVoice(speaker);
 
@@ -122,15 +148,21 @@ function elements() {
     };
 }
 
+
 function openBox(speaker) {
     const { box, speaker: speakerEl, text, next, choices } = elements();
 
     box.classList.remove("hidden");
     $("game").classList.add("dialogue-active");
+    $("inventory-toggle").disabled = true;
+    $("objectives-toggle").disabled = true;
 
     next.onclick = null;
+    next.disabled = false;
+    next.textContent = "Avançar";
     next.classList.add("hidden");
     choices.classList.add("hidden");
+
     choices.replaceChildren();
 
     const hasSpeaker = Boolean(speaker && speaker.trim() !== "");
@@ -146,7 +178,10 @@ function openBox(speaker) {
 function closeBox() {
     $("dialogue").classList.add("hidden");
     $("game").classList.remove("dialogue-active");
+    $("inventory-toggle").disabled = false;
+    $("objectives-toggle").disabled = false;
 }
+
 
 // Fecha qualquer diálogo aberto e descarta seus callbacks.
 export function closeDialogue() {
@@ -158,11 +193,12 @@ export function closeDialogue() {
     const { text, next, choices } = elements();
     next.onclick = null;
     choices.replaceChildren();
+
     text.classList.remove("fade-out");
     closeBox();
 }
 
-// DIÁLOGO NORMAL COM BOTÃO CONTINUAR
+// DIÁLOGO NORMAL COM AVANÇO POR BOTÃO, ESPAÇO OU CONTROLE
 export function showDialogue(lines, callback = null, speaker = "MEE") {
     const { text, next } = elements();
     const id = openBox(speaker);
@@ -171,21 +207,25 @@ export function showDialogue(lines, callback = null, speaker = "MEE") {
 
     async function showCurrentLine() {
         busy = true;
-        next.classList.add("hidden");
+        next.disabled = false;
+        next.textContent = "Avançar";
+        next.classList.remove("hidden");
 
         await typeText(text, lines[index], speaker);
         if (id !== session) return;
 
         busy = false;
-        next.classList.remove("hidden");
     }
 
     next.onclick = async () => {
-        if (busy || id !== session) return;
+        if (id !== session || next.disabled) return;
+        if (busy) {
+            skipTyping();
+            return;
+        }
 
         busy = true;
-        next.classList.add("hidden");
-
+        next.disabled = true;
         await fadeText(text);
         if (id !== session) return;
 
@@ -204,6 +244,7 @@ export function showDialogue(lines, callback = null, speaker = "MEE") {
 }
 
 // DIÁLOGO COM OPÇÕES DE RESPOSTA
+
 export async function showChoiceDialogue(question, options, speaker = "") {
     const { text, choices } = elements();
     const id = openBox(speaker);

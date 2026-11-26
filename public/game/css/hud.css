@@ -12,6 +12,27 @@
     pointer-events: auto;
 }
 
+#game button:focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 4px;
+    box-shadow: 0 0 0 6px rgb(0 0 0 / 70%);
+}
+
+.controller-status {
+    position: absolute;
+    top: 60px;
+    right: 16px;
+    z-index: 50;
+    max-width: min(560px, calc(100% - 32px));
+    padding: 9px 12px;
+    background: var(--color-hud-bg);
+    border: 1px solid var(--color-border);
+    color: var(--color-accent);
+    font-size: 10px;
+    line-height: 1.6;
+}
+
+
 /* Ações bloqueadas enquanto um cenário carrega */
 #game.scene-loading #interface button {
     pointer-events: none;
@@ -19,15 +40,55 @@
 
 #scene-actions {
     position: absolute;
-    bottom: 25px;
-    left: 25px;
-
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-
-    transition: opacity 0.2s ease;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
 }
+
+.scene-hotspot {
+    position: absolute;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: transparent;
+    opacity: 0;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.scene-hotspot:hover {
+    background: transparent;
+}
+
+.scene-hotspot:focus-visible {
+    border: 1px dashed var(--color-highlight);
+    background: rgb(211 179 122 / 10%);
+    outline: 2px solid var(--color-highlight);
+    outline-offset: 2px;
+}
+
+.game-cursor {
+    position: absolute;
+    z-index: 8;
+    width: 24px;
+    height: 32px;
+    pointer-events: none;
+    background: var(--color-highlight-text);
+    clip-path: polygon(0 0, 0 100%, 29% 75%, 48% 100%, 62% 93%, 43% 68%, 76% 67%);
+    filter: drop-shadow(2px 2px 0 var(--color-black));
+    transform: translate(-3px, -3px);
+}
+
+.game-cursor[data-target="true"] {
+    background: var(--color-brand-hover);
+    filter: drop-shadow(0 0 5px var(--color-brand-hover)) drop-shadow(2px 2px 0 var(--color-black));
+}
+
+#scene.controller-active,
+#scene.controller-active .scene-hotspot {
+    cursor: none;
+}
+
 
 #blindfold-button {
     position: absolute;
@@ -170,4 +231,12 @@
         padding: 6px 9px;
         font-size: 10px;
     }
+
+    .controller-status {
+        top: 56px;
+        right: 10px;
+        max-width: calc(100% - 20px);
+        font-size: 9px;
+    }
+
 }

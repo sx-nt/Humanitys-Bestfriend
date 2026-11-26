@@ -2,7 +2,7 @@
 import { $ } from "./core/utils.js";
 import { setupUiSounds, playUiSound } from "./core/audio.js";
 import { state, safeCode } from "./core/state.js";
-import { skipTyping } from "./ui/dialogue.js";
+import { advanceDialogue, isDialogueOpen, skipTyping } from "./ui/dialogue.js";
 import { crtTransition } from "./ui/transitions.js";
 import { initObjectives, closeObjectives } from "./ui/objectives.js";
 import { initNotifications } from "./ui/notifications.js";
@@ -16,6 +16,8 @@ import { toggleBlindfold } from "./game/blindfold.js";
 import { unlockSafe, requestSafeHint } from "./game/house.js";
 import { startBoot, skipBoot } from "./game/boot.js";
 import { startGame, restartGame, handleBookClosed } from "./game/flow.js";
+import { initGamepad } from "./game/controller.js";
+
 
 const boot = () => startBoot(startGame);
 
@@ -37,6 +39,8 @@ initObjectives();
 initNotifications();
 setupUiSounds();
 updateBlindfoldButton();
+initGamepad();
+
 
 // EVENTOS
 
@@ -57,15 +61,20 @@ Object.entries(clicks).forEach(([id, handler]) => {
     $(id).addEventListener("click", handler);
 });
 
-// Espaço: completa o texto em digitação ou pula o boot
+// Espaço completa a fala atual ou avança; fora do diálogo, pula o boot.
 document.addEventListener("keydown", (event) => {
-    if (event.code !== "Space") return;
+    if (event.code !== "Space" || event.repeat) return;
     if (event.target.closest?.("input, textarea")) return;
 
     event.preventDefault();
+    if (isDialogueOpen()) {
+        advanceDialogue();
+        return;
+    }
     if (skipTyping()) return;
     skipBoot();
 });
+
 
 // Esc: fecha uma camada por vez, da mais alta para a mais baixa.
 // Leitores (documento/livro) e o painel do cofre tratam o próprio Esc;
