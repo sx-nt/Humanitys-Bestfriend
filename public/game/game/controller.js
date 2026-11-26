@@ -1,10 +1,10 @@
 import { $ } from "../core/utils.js";
 
 const BUTTONS = {
-    confirm: 0,
+    confirm: 2,
     back: 1,
-    inventory: 3,
-    objectives: 2,
+    inventory: 0,
+    objectives: 3,
     start: 9
 };
 const DIRECTIONS = { up: 12, down: 13, left: 14, right: 15 };
