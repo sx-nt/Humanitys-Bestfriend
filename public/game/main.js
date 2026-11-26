@@ -16,6 +16,8 @@ import { toggleBlindfold } from "./game/blindfold.js";
 import { unlockSafe, requestSafeHint } from "./game/house.js";
 import { startBoot, skipBoot } from "./game/boot.js";
 import { startGame, restartGame, handleBookClosed } from "./game/flow.js";
+import { initGamepad } from "./game/controller.js";
+
 
 const boot = () => startBoot(startGame);
 
@@ -37,6 +39,8 @@ initObjectives();
 initNotifications();
 setupUiSounds();
 updateBlindfoldButton();
+initGamepad();
+
 
 // EVENTOS
 

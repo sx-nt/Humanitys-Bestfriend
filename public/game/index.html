@@ -61,6 +61,8 @@
     <div id="scene" class="hidden">
         <img id="background" src="" alt="Cenário">
         <img id="mirror-key-overlay" class="hidden" src="assets/items/chave.png" alt="Chave sobre o espelho">
+        <div id="scene-actions" role="group" aria-label="Pontos de interação do cenário"></div>
+        <div id="game-cursor" class="game-cursor hidden" aria-hidden="true"></div>
     </div>
 
     <div id="top-hud" class="hidden" aria-label="Controles do jogo">
@@ -109,7 +111,6 @@
 
     <div id="interface" class="hidden">
         <button id="blindfold-button" class="hidden" type="button">Colocar venda</button>
-        <div id="scene-actions"></div>
     </div>
 
     <section id="safe-panel" class="hidden" aria-label="Cofre">
@@ -209,6 +210,8 @@
         <p>MEE teve sua verdadeira identidade revelada.</p>
         <button id="restart-button" type="button">RESTART</button>
     </section>
+
+    <p id="controller-status" class="controller-status hidden" role="status" aria-live="polite"></p>
 
     <div id="crt-overlay"></div>
     <div id="crt-transition"></div>

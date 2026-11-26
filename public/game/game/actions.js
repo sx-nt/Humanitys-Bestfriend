@@ -13,7 +13,50 @@ import {
 
 const go = (sceneName) => () => loadScene(sceneName);
 
+const HOTSPOT_POSITIONS = {
+    beach: {
+        "Examinar destroços": [20, 62, 20, 29],
+        "Coletar madeira": [20, 62, 20, 29],
+        "Ir para os portões": [39, 38, 22, 56]
+    },
+    houseFront: {
+        "Coletar ferramentas": [27, 72, 14, 24],
+        "Entrar na casa": [39, 43, 25, 38],
+        "Examinar ferramentas": [27, 72, 14, 24]
+    },
+    quarto: {
+        "Examinar quadro": [27, 4, 19, 40],
+        "Examinar espelho": [69, 4, 19, 40],
+        "Examinar armário": [39, 43, 23, 40],
+        "Explorar a cidade": [72, 51, 26, 43],
+        "Voltar aos portões": [0, 40, 15, 55],
+        "Examinar janelas": [71, 4, 25, 42]
+    },
+    quadroZoom: {
+        "Remover o quadro": [20, 10, 60, 75],
+        "Acessar cofre": [20, 10, 60, 75],
+        "Voltar ao quarto": [0, 42, 18, 50]
+    },
+    cofre: {
+        "Voltar": [0, 42, 18, 50],
+        "Inserir senha": [25, 12, 50, 76]
+    },
+    cofreAberto: {
+        "Pegar o livro": [30, 12, 40, 76],
+        "Voltar ao quarto": [0, 42, 18, 50]
+    },
+    ww: {
+        "Tapar as janelas": [20, 8, 60, 78],
+        "Voltar ao quarto": [0, 42, 18, 50]
+    },
+    mirror: {
+        "Coletar chave": [34, 20, 32, 58],
+        "Voltar ao quarto": [0, 42, 18, 50]
+    }
+};
+
 const SCENE_ACTIONS = {
+
     beach: (s) => [
         !s.debrisExamined && ["Examinar destroços", examineDebris],
         s.debrisExamined && !hasItem("madeira") && ["Coletar madeira", collectWood],
@@ -62,10 +105,16 @@ const SCENE_ACTIONS = {
     ]
 };
 
-function createActionButton(label, action) {
+function createActionButton(label, action, position) {
     const button = document.createElement("button");
     button.type = "button";
+    button.className = "scene-hotspot";
+    button.setAttribute("aria-label", label);
     button.textContent = label;
+    button.style.left = `${position[0]}%`;
+    button.style.top = `${position[1]}%`;
+    button.style.width = `${position[2]}%`;
+    button.style.height = `${position[3]}%`;
 
     // Ignora cliques durante transição, diálogo, pausa ou game over
     button.addEventListener("click", () => {
@@ -80,6 +129,10 @@ export function updateSceneActions() {
     const container = $("scene-actions");
     const getActions = SCENE_ACTIONS[state.currentScene];
     const actions = getActions ? getActions(state).filter(Boolean) : [];
+    const positions = HOTSPOT_POSITIONS[state.currentScene] ?? {};
 
-    container.replaceChildren(...actions.map(([label, action]) => createActionButton(label, action)));
+    container.replaceChildren(...actions.map(([label, action], index) => {
+        const fallbackPosition = [5 + index * 15, 82, 13, 14];
+        return createActionButton(label, action, positions[label] ?? fallbackPosition);
+    }));
 }
