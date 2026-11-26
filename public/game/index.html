@@ -199,10 +199,13 @@
 
     <section id="dialogue" class="hidden">
     <p id="dialogue-speaker" class="hidden"></p>
-    <p id="dialogue-skip-hint" class="skip-hint">PRESSIONE ESPAÇO PARA PULAR</p>
+    <p id="dialogue-skip-hint" class="skip-hint">ESPAÇO: MOSTRAR FALA COMPLETA</p>
     <p id="dialogue-text"></p>
     <div id="dialogue-choices"></div>
-    <button id="dialogue-next" type="button">Continuar</button>
+    <div id="dialogue-actions">
+        <button id="dialogue-skip" type="button" class="hidden">Pular diálogo</button>
+        <button id="dialogue-next" type="button" class="hidden">Avançar</button>
+    </div>
     </section>
 
     <section id="game-over" class="screen hidden">
